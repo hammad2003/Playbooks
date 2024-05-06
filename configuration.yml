@@ -58,7 +58,7 @@
 
     - name: Clonar repositorio de HTML
       git:
-        repo: https://github.com/McMiguel2004/html3.git
+        repo: https://github.com/hammad2003/smai.git
         dest: /var/www/html/html3
         force: yes
       become: yes
@@ -87,8 +87,10 @@
         mysql -u usuario -pusuario -D smai -e "CREATE TABLE IF NOT EXISTS servidores (
           id INT AUTO_INCREMENT PRIMARY KEY,
           nombre VARCHAR(255),
-          software VARCHAR(50), -- Puede ser 'Java' o 'Bedrock'
-          version VARCHAR(20) -- Puede ser '1.20.4' o '1.18.2'
+          software VARCHAR(50),
+          version VARCHAR(20),
+          id_usuario INT,
+          FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         );"
 
         mysql -u usuario -pusuario -D smai -e "CREATE TABLE IF NOT EXISTS usuarios_servidores (

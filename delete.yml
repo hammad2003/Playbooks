@@ -1,0 +1,26 @@
+---
+- name: Configurar sudoers con Ansible
+  hosts: clientes_1
+  become: yes
+  tasks:
+    - name: Añadir permisos para usuario en sudoers
+      lineinfile:
+        dest: /etc/sudoers
+        insertafter: 'root\tALL=(ALL:ALL) ALL'
+        line: 'usuario ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Añadir permisos para grupo sudo en sudoers
+      lineinfile:
+        dest: /etc/sudoers
+        insertafter: '%sudo   ALL=(ALL:ALL) ALL'
+        line: '%sudo   ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+- name: Configurar página web con Apache y MySQL
+  hosts: clientes_1
+  become: yes
+  tasks:
+    - name: Limpiado el directorio HTML
+      shell: cd /var/www/ && sudo rm -r html/*
+      become: yes
