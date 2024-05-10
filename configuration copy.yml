@@ -1,0 +1,132 @@
+---
+- name: Configurar sudoers con Ansible
+  hosts: clientes_1
+  become: yes
+  tasks:
+    - name: Añadir permisos para usuario en sudoers
+      become: yes
+      lineinfile:
+        dest: /etc/sudoers
+        insertafter: 'root\tALL=(ALL:ALL) ALL'
+        line: 'usuario ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Añadir permisos para grupo sudo en sudoers
+      become: yes
+      lineinfile:
+        dest: /etc/sudoers
+        insertafter: '%sudo   ALL=(ALL:ALL) ALL'
+        line: '%sudo   ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+
+- name: Configurar página web con Apache y MySQL
+  hosts: clientes_1
+  become: yes
+  tasks:
+    - name: Actualizar lista de paquetes
+      apt:
+        update_cache: yes
+
+    - name: Instalar paquetes necesarios
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - openjdk-18-jre
+        - openjdk-18-jdk
+        - docker.io
+        - git
+        - apache2
+        - mysql-server
+        - php
+        - libapache2-mod-php
+        - php-mysql
+        - python3-pymysql
+
+    - name: Instalar pip3 en la máquina destino
+      become: yes
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Instalar la biblioteca Docker para Python
+      become: yes
+      pip:
+        name: docker
+        executable: pip3
+
+    - name: Descargar imagen de Docker
+      docker_image:
+        name: itzg/minecraft-server
+
+    - name: Descargar e instalar TLauncher
+      shell: |
+        mkdir -p /home/usuario/smai/launcher
+        cd /home/usuario/smai/launcher
+        wget -O jar https://tlauncher.org/jar
+        unzip jar
+        mv TLauncher.v10/* .
+        rm -r TLauncher.v10
+        rm jar
+      become: yes
+
+    - name: Limpiar el directorio HTML
+      file:
+        path: /var/www/html
+        state: absent
+      become: yes
+
+    - name: Crear el directorio HTML
+      file:
+        path: /var/www/html
+        state: directory
+        mode: '0755'
+      become: yes
+
+    - name: Clonar repositorio de HTML
+      git:
+        repo: https://github.com/hammad2003/smai.git
+        dest: /var/www/html/smai
+        force: yes
+      become: yes
+
+    - name: Mover archivos del repositorio a la carpeta de Apache
+      shell: mv /var/www/html/smai/* /var/www/html/ && rm -rf /var/www/html/smai
+      become: yes
+
+    - name: Crear base de datos y usuario
+      shell: |
+        mysql -u root -e "CREATE DATABASE IF NOT EXISTS smai;"
+        mysql -u root -e "CREATE USER IF NOT EXISTS 'usuario'@'localhost' IDENTIFIED WITH mysql_native_password BY 'usuario';"
+        mysql -u root -e "GRANT ALL ON smai.* to 'usuario'@'localhost';"
+      become: yes
+
+    - name: Crear las tablas
+      shell: |
+        mysql -u usuario -pusuario -D smai -e "CREATE TABLE IF NOT EXISTS usuarios (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          nombre VARCHAR(255),
+          correo VARCHAR(255) UNIQUE,
+          contrasena VARCHAR(255),
+          servidores_creados INT DEFAULT 0
+        );"
+
+        mysql -u usuario -pusuario -D smai -e "CREATE TABLE IF NOT EXISTS servidores (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          nombre VARCHAR(255),
+          software VARCHAR(50),
+          version VARCHAR(20),
+          id_usuario INT,
+          FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+        );"
+
+        mysql -u usuario -pusuario -D smai -e "CREATE TABLE IF NOT EXISTS usuarios_servidores (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          id_usuario INT,
+          id_servidor INT,
+          fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+          FOREIGN KEY (id_servidor) REFERENCES servidores(id)
+        );"
+      become: yes
