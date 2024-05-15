@@ -1,6 +1,6 @@
 ---
 - name: Configurar sudoers con Ansible
-  hosts: clientes_1
+  hosts: clientes
   become: yes
   tasks:
     - name: Añadir permisos para usuario en sudoers
@@ -18,7 +18,7 @@
         validate: 'visudo -cf %s'
 
 - name: Configurar página web con Apache y MySQL
-  hosts: clientes_1
+  hosts: clientes
   become: yes
   tasks:
     - name: Limpiado el directorio HTML

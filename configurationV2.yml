@@ -1,6 +1,6 @@
 ---
 - name: Configurar sudoers con Ansible
-  hosts: clientes_1
+  hosts: clientes
   become: yes
   tasks:
     - name: Añadir permisos para usuario en sudoers
@@ -21,7 +21,7 @@
 
 
 - name: Configurar página web con Apache y MySQL
-  hosts: clientes_1
+  hosts: clientes
   become: yes
   tasks:
     - name: Actualizar lista de paquetes
@@ -42,23 +42,10 @@
         - php
         - libapache2-mod-php
         - php-mysql
-        - python3-pymysql
-
-    - name: Instalar pip3 en la máquina destino
-      become: yes
-      apt:
-        name: python3-pip
-        state: present
-
-    - name: Instalar la biblioteca Docker para Python
-      become: yes
-      pip:
-        name: docker
-        executable: pip3
 
     - name: Descargar imagen de Docker
-      docker_image:
-        name: itzg/minecraft-server
+      shell: docker pull itzg/minecraft-server
+      become: yes
 
     - name: Descargar e instalar TLauncher
       shell: |
@@ -118,15 +105,7 @@
           software VARCHAR(50),
           version VARCHAR(20),
           id_usuario INT,
+          container_id VARCHAR(255),
           FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
-        );"
-
-        mysql -u usuario -pusuario -D smai -e "CREATE TABLE IF NOT EXISTS usuarios_servidores (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          id_usuario INT,
-          id_servidor INT,
-          fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
-          FOREIGN KEY (id_servidor) REFERENCES servidores(id)
         );"
       become: yes
