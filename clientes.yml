@@ -1,7 +1,0 @@
----
-clientes:
-  hosts:
-    cliente:
-      ansible_host: 192.168.22.119
-      ansible_user: usuario
-      ansible_ssh_pass: usuario

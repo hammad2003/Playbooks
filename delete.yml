@@ -1,6 +1,7 @@
 ---
 - name: Configurar sudoers con Ansible
   hosts: clientes
+  remote_user: usuario
   become: yes
   tasks:
     - name: Añadir permisos para usuario en sudoers
@@ -19,6 +20,7 @@
 
 - name: Configurar página web con Apache y MySQL
   hosts: clientes
+  remote_user: usuario
   become: yes
   tasks:
     - name: Limpiado el directorio HTML

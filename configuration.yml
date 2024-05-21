@@ -1,6 +1,7 @@
 ---
 - name: Configurar sudoers con Ansible
   hosts: clientes
+  remote_user: usuario
   become: yes
   tasks:
     - name: Añadir permisos para usuario en sudoers
@@ -42,23 +43,10 @@
         - php
         - libapache2-mod-php
         - php-mysql
-        - python3-pymysql
-
-    - name: Instalar pip3 en la máquina destino
-      become: yes
-      apt:
-        name: python3-pip
-        state: present
-
-    - name: Instalar la biblioteca Docker para Python
-      become: yes
-      pip:
-        name: docker
-        executable: pip3
 
     - name: Descargar imagen de Docker
-      docker_image:
-        name: itzg/minecraft-server
+      shell: docker pull itzg/minecraft-server
+      become: yes
 
     - name: Descargar e instalar TLauncher
       shell: |
@@ -119,6 +107,9 @@
           version VARCHAR(20),
           id_usuario INT,
           container_id VARCHAR(255),
+          estado VARCHAR(20) DEFAULT 'Detenido',
+          ip_address VARCHAR(255),
+          puerto INT,
           FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         );"
       become: yes
