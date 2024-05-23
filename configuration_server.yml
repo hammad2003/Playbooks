@@ -1,6 +1,6 @@
 ---
 - name: Configurar sudoers con Ansible
-  hosts: clientes
+  hosts: servidor
   remote_user: usuario
   become: yes
   tasks:
@@ -21,10 +21,6 @@
         validate: 'visudo -cf %s'
 
 
-- name: Configurar página web con Apache y MySQL
-  hosts: clientes
-  become: yes
-  tasks:
     - name: Actualizar lista de paquetes
       apt:
         update_cache: yes
@@ -34,8 +30,6 @@
         name: "{{ item }}"
         state: present
       loop:
-        - openjdk-18-jre
-        - openjdk-18-jdk
         - docker.io
         - git
         - apache2
@@ -46,17 +40,6 @@
 
     - name: Descargar imagen de Docker
       shell: docker pull itzg/minecraft-server
-      become: yes
-
-    - name: Descargar e instalar TLauncher
-      shell: |
-        mkdir -p /home/usuario/smai/launcher
-        cd /home/usuario/smai/launcher
-        wget -O jar https://tlauncher.org/jar
-        unzip jar
-        mv TLauncher.v10/* .
-        rm -r TLauncher.v10
-        rm jar
       become: yes
 
     - name: Limpiar el directorio HTML
@@ -88,6 +71,12 @@
         mysql -u root -e "CREATE DATABASE IF NOT EXISTS smai;"
         mysql -u root -e "CREATE USER IF NOT EXISTS 'usuario'@'localhost' IDENTIFIED WITH mysql_native_password BY 'usuario';"
         mysql -u root -e "GRANT ALL ON smai.* to 'usuario'@'localhost';"
+      become: yes
+
+    - name: Borrar las tablas
+      shell: |
+        mysql -u usuario -pusuario -D smai -e "DROP TABLE IF EXISTS servidores;"
+        mysql -u usuario -pusuario -D smai -e "DROP TABLE IF EXISTS usuarios;"
       become: yes
 
     - name: Crear las tablas
