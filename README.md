@@ -1,4 +1,4 @@
-# **🚀 Guía de Uso para Configuración de Cliente y Servidor 🛠️**
+# **🚀 Configuración de Cliente y Servidor 🛠️**
 
 ## Descripción
 
@@ -17,8 +17,10 @@ Esta guía proporciona instrucciones detalladas para configurar tanto un cliente
 
 1. **Clonar el Repositorio:**
    Clona o descarga el repositorio de GitHub en el cliente.
+   ```bash
+   https://github.com/hammad2003/Scripts-Playbooks.git
 
-2. **Ejecutar Script de Instalación:**
+3. **Ejecutar Script de Instalación:**
    Ejecuta el script `install_client.sh` para configurar el cliente. Asegúrate de dar permisos de ejecución al script con el comando:
    ```bash
-   chmod +x install_client.sh
+   chmod u+x install_client.sh
