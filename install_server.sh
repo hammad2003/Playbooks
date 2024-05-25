@@ -34,6 +34,17 @@ fi
 echo "[servidor]" | sudo tee -a /etc/ansible/hosts
 echo "$(hostname -I | cut -d ' ' -f1)" | sudo tee -a /etc/ansible/hosts
 
+# Crear archivo ansible.cfg si no existe
+print_message "Creando archivo ansible.cfg si no existe..." "$BLUE"
+if [ ! -f /etc/ansible/ansible.cfg ]; then
+  sudo touch /etc/ansible/ansible.cfg
+fi
+
+# Añadir configuración para deshabilitar la comprobación de la clave de host
+print_message "Configurando Ansible para deshabilitar la comprobación de clave de host..." "$BLUE"
+echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg
+echo "host_key_checking = False" | sudo tee -a /etc/ansible/ansible.cfg
+
 # Ejecución de la configuración del servidor mediante Ansible
 mensaje_password
 sudo ansible-playbook configuration_server.yml -k -b -K
