@@ -38,10 +38,24 @@ add_to_ansible_hosts() {
     fi
 }
 
+# Función para crear archivo ansible.cfg si no existe y añadir configuración
+configurar_ansible() {
+    local config_file="/etc/ansible/ansible.cfg"
+    if [ ! -f "$config_file" ]; then
+        sudo touch "$config_file"
+        echo "[defaults]" | sudo tee -a "$config_file"
+        echo "host_key_checking = False" | sudo tee -a "$config_file"
+    fi
+}
+
+# Crear archivo ansible.cfg si no existe y añadir configuración
+configurar_ansible
+
+
 while true; do
     CHOICE=$(whiptail --title "Script Selection Menu" --menu "Choose a script to run:" 15 60 4 \
         "1" "Instalar TLauncher (Cliente)" \
-        "2" "Instalar SMAI (Servidores de Minecraft Automatizados Increíbles)" \
+        "2" "Instalar SMAI (Servidor)" \
         "3" "Salir" 3>&1 1>&2 2>&3)
 
     # Check if CHOICE is empty (user pressed Cancel or closed the dialog)
