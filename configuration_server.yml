@@ -66,6 +66,24 @@
       shell: mv /var/www/html/smai/* /var/www/html/ && rm -rf /var/www/html/smai
       become: yes
 
+    - name: Cambiar propietario y grupo de /var/www/html/mods
+      file:
+        path: /var/www/html/mods
+        owner: usuario
+        group: usuario
+        recurse: yes
+        mode: "0775"
+      become: yes
+
+    - name: Cambiar propietario y grupo de /var/www/html/plugins
+      file:
+        path: /var/www/html/plugins
+        owner: usuario
+        group: usuario
+        recurse: yes
+        mode: "0775"
+      become: yes
+
     - name: Crear base de datos y usuario
       shell: |
         mysql -u root -e "CREATE DATABASE IF NOT EXISTS smai;"
@@ -75,6 +93,7 @@
 
     - name: Borrar las tablas
       shell: |
+        mysql -u usuario -pusuario -D smai -e "DROP TABLE IF EXISTS server_properties;"
         mysql -u usuario -pusuario -D smai -e "DROP TABLE IF EXISTS servidores;"
         mysql -u usuario -pusuario -D smai -e "DROP TABLE IF EXISTS usuarios;"
       become: yes
