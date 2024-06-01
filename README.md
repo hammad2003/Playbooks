@@ -31,6 +31,7 @@ Esta guía proporciona instrucciones detalladas para configurar tanto un cliente
     ```bash
     chmod u+x run.sh && ./run.sh
     ```
-       Al ejecutar `run.sh`, se te presentará un menú con dos opciones:
+    
+   Al ejecutar `run.sh`, se te presentará un menú con dos opciones:
    - **Configurar el Cliente:** Instala el TLauncher (Minecraft) en el cliente.
    - **Configurar el Servidor SMAI:** Configura una página para alojar servidores de Minecraft con SMAI.
