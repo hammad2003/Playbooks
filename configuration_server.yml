@@ -135,7 +135,7 @@
           spawn_monsters BOOLEAN DEFAULT TRUE,
           pvp BOOLEAN DEFAULT TRUE,
           enable_command_block BOOLEAN DEFAULT FALSE,
-          allow_flight BOOLEAN DEFAULT TRUE,
+          allow_flight BOOLEAN DEFAULT FALSE,
           FOREIGN KEY (server_id) REFERENCES servidores(id)  
         );"
       become: yes
